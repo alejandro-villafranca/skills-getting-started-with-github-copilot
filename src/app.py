@@ -39,6 +39,43 @@ activities = {
         "max_participants": 30,
         "participants": ["john@mergington.edu", "olivia@mergington.edu"]
     }
+    ,
+        "Basketball Team": {
+            "description": "Join the school basketball team for training and competitions",
+            "schedule": "Wednesdays, 4:00 PM - 6:00 PM",
+            "max_participants": 15,
+            "participants": []
+        },
+        "Soccer Club": {
+            "description": "Practice soccer skills and play friendly matches",
+            "schedule": "Mondays and Thursdays, 3:30 PM - 5:00 PM",
+            "max_participants": 18,
+            "participants": []
+        },
+        "Drama Club": {
+            "description": "Participate in theater productions and acting workshops",
+            "schedule": "Tuesdays, 4:00 PM - 5:30 PM",
+            "max_participants": 20,
+            "participants": []
+        },
+        "Art Workshop": {
+            "description": "Explore painting, drawing, and other visual arts",
+            "schedule": "Fridays, 3:30 PM - 5:00 PM",
+            "max_participants": 16,
+            "participants": []
+        },
+        "Debate Team": {
+            "description": "Develop public speaking and argumentation skills",
+            "schedule": "Thursdays, 4:00 PM - 5:30 PM",
+            "max_participants": 10,
+            "participants": []
+        },
+        "Math Club": {
+            "description": "Solve challenging math problems and prepare for competitions",
+            "schedule": "Mondays, 3:30 PM - 4:30 PM",
+            "max_participants": 12,
+            "participants": []
+        }
 }
 
 
@@ -52,6 +89,7 @@ def get_activities():
     return activities
 
 
+
 @app.post("/activities/{activity_name}/signup")
 def signup_for_activity(activity_name: str, email: str):
     """Sign up a student for an activity"""
@@ -62,6 +100,23 @@ def signup_for_activity(activity_name: str, email: str):
     # Get the specific activity
     activity = activities[activity_name]
 
+    # Validate student is not already signed up
+    if email in activity["participants"]:
+        raise HTTPException(status_code=400, detail="Student already signed up for this activity")
+
     # Add student
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
+
+
+# Endpoint para eliminar participante de una actividad
+@app.post("/activities/{activity_name}/remove")
+def remove_participant(activity_name: str, email: str):
+    """Remove a student from an activity"""
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    activity = activities[activity_name]
+    if email not in activity["participants"]:
+        raise HTTPException(status_code=404, detail="Participant not found in this activity")
+    activity["participants"].remove(email)
+    return {"message": f"Removed {email} from {activity_name}"}
