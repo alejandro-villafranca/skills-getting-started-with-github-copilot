@@ -1,2 +1,7 @@
+# Para pruebas
+pytest
+httpx
+pytest-asyncio
+fastapi
 fastapi
 uvicorn
